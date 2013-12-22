@@ -42,12 +42,11 @@ interface FunctionScope {
 }
 ```
 
-### WithScope
+### LetScope
 
 ```
-interface WithScope {
-  type: "WithScope";
-  object: Variable;
+interface LetScope {
+  type: "LetScope";
 }
 ```
 
