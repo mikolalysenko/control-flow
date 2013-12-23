@@ -4,7 +4,23 @@ The goal of the control-flow module is to transform parsed JavaScript into a sim
 
 At a high level the output from control-flow is a direct graph that represents a [control flow graph](http://en.wikipedia.org/wiki/Control_flow_graph) of the program.  Nodes in the control flow graph are made up of blocks of linear code, each of which is represented as a list of operators on some variables within a defined scope.  These operators are encoded in a specialized [three address code](http://en.wikipedia.org/wiki/Three_address_code) based on a simplified subset of JavaScript.
 
+While doing this, it is also important that the relation of this intermediate representation to the abstract syntax tree is maintained.  This is so instrumentation and analysis can be reported in terms of the original source code.
+
+
+## Closure
+```
+interface Closure {
+  type: "Closure";
+  name: String;
+  entry: Block;
+  exit: Block;
+  blocks: [ Block ];
+}
+```
+
 ## Block
+
+A Block is a contiguous region of code
 
 ```
 interface Block {
@@ -22,7 +38,7 @@ Each block has an associated scope which tracks the set of all variables present
 ```
 interface Scope {
   parent: Scope | null;
-  variables: [ { key: Identifier, value: Variable } ];
+  variables: [ Variable ];
   node: EsprimaNode;
 }
 ```
@@ -43,8 +59,10 @@ function resolveName(id, scope) {
 }
 ```
 
+The `node` parameter is the EsprimaNode which stores the 
+
 ### GlobalScope
-The root scope object for the global scope
+The root scope object for the global scope.
 
 ```
 interface GlobalScope <: Scope {
@@ -97,7 +115,7 @@ interface Variable {
 ```
 interface Literal {
   type: "Literal";
-  value: null | Number | String | Boolean | {};
+  value: null | Number | String | Boolean;
   node: EsprimaNode;
 }
 ```
@@ -116,7 +134,7 @@ interface Operator {
 ```
 interface UnaryOperator <: Operator {
   type: "UnaryOperator";
-  operator: "-" | "+" | "!" | "~" | "typeof" | "void" | "delete";
+  operator: "-" | "+" | "!" | "~" | "typeof" | "void";
   destination: Variable;
   argument: Literal | Variable;
 }
@@ -179,6 +197,17 @@ interface SetOperator <: Operator {
 }
 ```
 
+### DeleteOperator
+Deletes a property within an object
+
+```
+interface DeleteOperator <: Operator {
+  type: "DeleteOperator";
+  object: Variable | Literal;
+  property: Variable | Literal;
+}
+```
+
 ### NewOperator
 Create a new object
 
@@ -188,6 +217,17 @@ interface NewOperator <: Operator {
   destination: Variable;
   callee: Variable;
   arguments: [ Variable | Literal ];
+}
+```
+
+### LambdaOperator
+Creates a new JavaScript closure
+
+```
+interface LambdaOperator <: Operator {
+  type: "LambdaOperator";
+  destination: Variable;
+  closure: Closure;
 }
 ```
 
