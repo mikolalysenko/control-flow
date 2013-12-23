@@ -152,7 +152,7 @@ interface BinaryOperator <: Operator {
             "<<" | ">>" | ">>>" |
             "+" | "-" | "*" | "/" | "%" |
             "!" | "^" | "&" | "in" |
-            "instanceof" | ".."
+            "instanceof"
   destination: Variable;
   left: Literal | Variable;
   right: Literal | Variable;
