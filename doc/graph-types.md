@@ -1,9 +1,10 @@
 control-flow
 ============
-The goal of the control-flow module is to transform parsed JavaScript into a simpler intermediate representation.  The objective here is to create an intermediate representation of JavaScript with as few moving parts as possible.  Doing this makes processing the generated code simpler since there are fewer cases that must be considered.
+The goal of the control-flow module is to transform parsed JavaScript into a simpler intermediate representation for the purposes of static analysis.  While JavaScript by itself is by no means a complicated language, it still has enough weird syntactic quirks and edge cases that make writing a proper interpreter cumbersome.  By focusing on generating a control flow graph for a smaller subset of JS, analysis and abstract interpretation will have to account for fewer special cases and so it should be easier to get it right.
+
+At a high level the output from control-flow is a direct graph that represents a [control flow graph](http://en.wikipedia.org/wiki/Control_flow_graph) of the program.  Nodes in the control flow graph are made up of blocks of linear code, each of which is represented as a list of operators on some variables within a defined scope.  These operators are encoded in a specialized [three address code](http://en.wikipedia.org/wiki/Three_address_code) based on a simplified subset of JavaScript.
 
 ## Block
-The main output from the module is a control flow graph.  Nodes in the control flow graph are made up of blocks.  Each block is a linear list of operators within some specified scope.  Blocks are connected to other blocks by terminator nodes, which implement things like branching, loops and returns.
 
 ```
 interface Block {
@@ -96,7 +97,7 @@ interface Variable {
 ```
 interface Literal {
   type: "Literal";
-  value: ...;
+  value: null | Number | String | Boolean | {};
   node: EsprimaNode;
 }
 ```
@@ -192,12 +193,13 @@ interface NewOperator <: Operator {
 
 ## Terminator
 
-### Jump
+### JumpTerminator
 
-### If
+### IfTerminator
 
-### Return
+### ReturnTerminator
 
-### Throw
+### ThrowTerminator
 
-### TryCatch
+### TryCatchTerminator
+
