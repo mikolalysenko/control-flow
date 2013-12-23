@@ -193,13 +193,56 @@ interface NewOperator <: Operator {
 
 ## Terminator
 
+```
+interface Terminator {
+  node: EsprimaNode;
+}
+```
+
 ### JumpTerminator
+
+```
+interface JumpTerminator <: Terminator {
+  type: "JumpTerminator";
+  target: Block;
+}
+```
 
 ### IfTerminator
 
+```
+interface IfTerminator <: Terminator {
+  type: "IfTerminator";
+  predicate: Variable;
+  consequent: Block;
+  alternate: Block;
+}
+```
+
 ### ReturnTerminator
+
+```
+interface ReturnTerminator <: Terminator {
+  type: "ReturnTerminator";
+  result: Variable;
+}
+```
 
 ### ThrowTerminator
 
+```
+interface ThrowTerminator <: Terminator {
+  type: "ThrowTerminator";
+  exception: Variable;
+}
+```
+
 ### TryCatchTerminator
 
+```
+interface TryCatchTerminator <: Terminator {
+  type: "TryCatchTerminator";
+  tryblock: Block;
+  catchblock: Block;
+}
+```
