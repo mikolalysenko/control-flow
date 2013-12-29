@@ -1,5 +1,5 @@
-control-flow
-============
+Data types
+==========
 The goal of the control-flow module is to transform parsed JavaScript into a simpler intermediate representation for the purposes of static analysis.  While JavaScript by itself is by no means a complicated language, it still has enough weird syntactic quirks and edge cases that make writing a proper interpreter cumbersome.  By focusing on generating a control flow graph for a smaller subset of JS, analysis and abstract interpretation will have to account for fewer special cases and so it should be easier to get it right.
 
 At a high level the output from control-flow is a direct graph that represents a [control flow graph](http://en.wikipedia.org/wiki/Control_flow_graph) of the program.  Nodes in the control flow graph are made up of blocks of linear code, each of which is represented as a list of operators on some variables within a defined scope.  These operators are encoded in a specialized [three address code](http://en.wikipedia.org/wiki/Three_address_code) based on a simplified subset of JavaScript.
@@ -8,95 +8,19 @@ While doing this, it is also important that the relation of this intermediate re
 
 
 ## Closure
+The root object from an analysis is a lexical closure.  Each closure has a pointer to the first block, and execution of a closure starts by interpreting the first block and continuing recursively.  To simplify inlining, each closure keeps a pointer to the last block, a block which is called upon triggering an exception, and a list of all blocks within the closure.  Each closure also tracks the scope and arguments of the closure.
+
 ```
 interface Closure {
   type: "Closure";
   name: String;
+  variables: [ Variable ];
+  arguments: [ Variable ];
   entry: Block;
   exit: Block;
+  except: Block;
   blocks: [ Block ];
-}
-```
-
-## Block
-
-A Block is a contiguous region of code
-
-```
-interface Block {
-  type: "Block";
-  scope: Scope;
-  body: [ Operator ];
-  terminator: Terminator;
-}
-```
-
-## Scope
-
-Each block has an associated scope which tracks the set of all variables present within the block.  
-
-```
-interface Scope {
-  parent: Scope | null;
-  variables: [ Variable ];
   node: EsprimaNode;
-}
-```
-
-Resolving a variable reference within a scope can be performed using the following algorithm:
-
-```javascript
-function resolveName(id, scope) {
-  while(scope !== null) {
-    for(var i=0; i<scope.variables.length; ++i) {
-      if(scope.variables[i].id === id) {
-        return scope.variables[i]
-      }
-    }
-    scope = scope.parent
-  }
-  return null
-}
-```
-
-The `node` parameter is the EsprimaNode which stores the 
-
-### GlobalScope
-The root scope object for the global scope.
-
-```
-interface GlobalScope <: Scope {
-  type: "GlobalScope";
-  parent: null;
-}
-```
-
-### FunctionScope
-Scope object for functions/closures
-
-```
-interface FunctionScope <: Scope {
-  type: "FunctionScope";
-  arguments: [ ArgumentVariable ];
-}
-```
-
-### LetScope
-Scope object for let blocks
-
-```
-interface LetScope <: Scope {
-  type: "LetScope";
-}
-```
-
-### CatchScope
-Scope object for catch block
-
-```
-interface CatchScope <: Scope{
-  type: "CatchScope";
-  exception: Variable;
 }
 ```
 
@@ -120,8 +44,21 @@ interface Literal {
 }
 ```
 
+## Block
+
+A Block is a contiguous region of code.  Control flow graphs are directed acyclic graphs made out of blocks.  Each block has a scope, which determines the variables which are bound within the block, a linear sequence of operators and a final terminator block which handles the 
+
+```
+interface Block {
+  type: "Block";
+  body: [ Operator ];
+  terminator: Terminator;
+}
+```
 
 ## Operator
+
+Each operator in a block is a three address code.  Operations include unary and binary expressions, function calls, property access, object creation, and closure construction. 
 
 ```
 interface Operator {
@@ -130,6 +67,8 @@ interface Operator {
 ```
 
 ### UnaryOperator
+
+A unary JavaScript operator
 
 ```
 interface UnaryOperator <: Operator {
@@ -160,6 +99,7 @@ interface BinaryOperator <: Operator {
 ```
 
 ### CallOperator
+
 Calls a function or subroutine
 
 ```
@@ -173,6 +113,7 @@ interface CallOperator <: Operator {
 ```
 
 ### GetOperator
+
 Retrieve a property from an object
 
 ```
@@ -185,6 +126,7 @@ interface GetOperator <: Operator {
 ```
 
 ### SetOperator
+
 Update a property in an object
 
 ```
@@ -198,6 +140,7 @@ interface SetOperator <: Operator {
 ```
 
 ### DeleteOperator
+
 Deletes a property within an object
 
 ```
@@ -209,6 +152,7 @@ interface DeleteOperator <: Operator {
 ```
 
 ### NewOperator
+
 Create a new object
 
 ```
@@ -221,6 +165,7 @@ interface NewOperator <: Operator {
 ```
 
 ### LambdaOperator
+
 Creates a new JavaScript closure
 
 ```
@@ -232,6 +177,8 @@ interface LambdaOperator <: Operator {
 ```
 
 ## Terminator
+
+Terminators are the final statement within a block and link the blocks together
 
 ```
 interface Terminator {
