@@ -47,7 +47,8 @@ Each variable in the program has an associated identifier and is attached to som
 interface Variable {
   type: "Variable";
   id: VariableId;
-  node: EsprimaNode | null;
+  local: Boolean;
+  nodes: [ EsprimaNode ];
 }
 ```
 
