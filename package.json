@@ -1,0 +1,48 @@
+{
+  "name": "control-flow",
+  "version": "0.0.0",
+  "description": "Control flow analysis for JavaScript",
+  "main": "cfg.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "dependencies": {
+    "uniq": "~0.0.2"
+  },
+  "devDependencies": {
+    "tape": "~2.3.2",
+    "tap": "~0.4.6"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikolalysenko/control-flow.git"
+  },
+  "keywords": [
+    "control",
+    "flow",
+    "graph",
+    "3ac",
+    "three",
+    "address",
+    "code",
+    "intepreter",
+    "static",
+    "analysis",
+    "programming",
+    "languages",
+    "javascript",
+    "esprima",
+    "parse",
+    "tools"
+  ],
+  "author": "Mikola Lysenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikolalysenko/control-flow/issues"
+  },
+  "homepage": "https://github.com/mikolalysenko/control-flow"
+}
