@@ -2,15 +2,14 @@
 
 module.exports = createControlFlowGraph
 
-var types = require("./lib/types.js")
-var createAnalyzer = require("./lib/analyzer.js")
+var analyzeClosure = require("./lib/analyzer")
 
-function createControlFlowGraph(root) {
-  if(root.type !== "Program") {
-    throw new Error("control-flow: Invalid parse tree, expected 'Program'")
-  }
-  var analyzer = createAnalyzer()
-  var graph = analyzer.processBlock(new types.GlobalScope({}, root), root.body)
-  analyzer.fixupLabels()
-  return graph
+function createControlFlowGraph(root, opts) {
+  opts = opts || {}
+
+  //Create root environment
+  var env = {}
+
+  //Run analysis
+  return analyzeClosure(root, env)
 }
