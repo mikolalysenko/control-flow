@@ -189,7 +189,7 @@ Calls a function or subroutine
 ```
 interface CallTerminator <: Terminator {
   type: "CallTerminator";
-  callee: VariableId | "!Get" | "!Set" | "!New" | "!Delete";
+  callee: VariableId;
   object: VariableId | Literal;
   arguments: [ VariableId | Literal ];
   result: VariableId;
@@ -209,43 +209,124 @@ If the function completes normally, then execution continues from the `next` blo
 
 In addition to normal function calls, object construction and property access is managed using the CallTerminator block.  The following psuedofunctions are defined:
 
-#### `"!Get"`
+### GetTerminator
 
 Access a property of `object`
 
+```
+interface GetTerminator <: Terminator {
+  type: "GetTerminator";
+  object: VariableId;
+  property: VariableId | Literal;
+  result: VariableId;
+  next: BlockId;
+  exception: VariableId;
+  catch: BlockId;
+}
+```
+
+In JavaScript, this function can be translated as follows:
+
 ```javascript
-function !Get(property) {
+function get(object, property) {
   return object[property]
 }
 ```
 
-#### `"!Set"`
+### SetTerminator
 
 Updates a property in an object
 
+```
+interface SetTerminator <: Terminator {
+  type: "SetTerminator";
+  object: VariableId;
+  property: VariableId | Literal;
+  value: VariableId | Literal;
+  result: VariableId;
+  next: BlockId;
+  exception: VariableId;
+  catch: BlockId;
+}
+```
+
+This can be interpreterd as follows,
+
 ```javascript
-function !Set(property, value) {
+function set(object, property, value) {
   return object[property] = value
 }
 ```
 
-#### `"!New"`
-
-Creates a new object.  The constructor for the object is stored in the `object` property.
-
-```javascript
-function !New(args...) {
-  return new object(args...)
-}
-```
-
-#### `"!Delete"`
+### DeleteTerminator
 
 Deletes a property of an object.
 
+```
+interface DeleteTerminator <: Terminator {
+  type: "DeleteTerminator";
+  object: VariableId;
+  property: VariableId | Literal;
+  result: VariableId;
+  next: BlockId;
+  exception: VariableId;
+  catch: BlockId;
+}
+```
+
+This translates to the following JavaScript
+
 ```javascript
-function !Delete(property) {
+function delete(object, property) {
   return delete object[property]
+}
+```
+
+### HasTerminator
+
+Checks if a property is contained in an object
+
+```
+interface HasTerminator <: Terminator {
+  type: "HasTerminator";
+  object: VariableId;
+  property: VariableId | Literal;
+  result: VariableId;
+  next: BlockId;
+  exception: VariableId;
+  catch: BlockId;
+}
+```
+
+This translates to the following psuedo-JavaScript
+
+```javascript
+function has(object, property) {
+  return property in object
+}
+```
+
+### NewTerminator
+
+Creates a new object.  The constructor for the object is stored in the `object` property.
+
+```
+interface NewTerminator <: Terminator {
+  type: "NewTerminator";
+  constructor: VariableId;
+  arguments: [ VariableId | Literal ];
+  result: VariableId;
+  next: BlockId;
+  exception: VariableId;
+  error: BlockId;
+}
+```
+
+This translates to the following JavaScript
+
+```javascript
+function new(args...) {
+  return new object(args...)
 }
 ```
 
