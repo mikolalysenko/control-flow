@@ -19,7 +19,7 @@ interface Closure {
   closures: [ { id: VariableId, closure: Closure } ];
   entry: BlockId;
   exit: BlockId;
-  except: BlockId;
+  raise: BlockId;
   blocks: [ Block ];
   node: EsprimaNode | null;
 }
@@ -31,13 +31,14 @@ The meaning of these properties is as follows:
 * `name` - The name of the closure if specified
 * `variables` - A list of all the variables contained within the closure
 * `arguments` - A list of the input arguments for the closure
-* `object` - The variable storing the `this` variable for this closure
 * `closures` - The list of all subclosures contained within this closure
 * `entry` - The first block from which execution starts
 * `exit` - The final block of the closure, which is called upon termination
-* `except` - This block is called if the closure throws an uncaught exception
+* `raise` - This block is called if the closure throws an uncaught exception
 * `blocks` - A list of all blocks in the closure
 * `node` - A reference to the esprima node associated to the closure
+
+Note that each closure has exactly one block where either a value is returned or an exception is raised.  This simplifies the process of inlining a closure.  
 
 ## Variable
 
@@ -105,7 +106,7 @@ A unary JavaScript operator.
 ```
 interface UnaryOperator <: Operator {
   type: "UnaryOperator";
-  operator: "-" | "+" | "!" | "~" | "typeof";
+  operator: "" | "-" | "+" | "!" | "~" | "typeof";
   destination: VariableId;
   argument: VariableId | Literal;
 }
@@ -134,8 +135,7 @@ interface BinaryOperator <: Operator {
             "<" | "<=" | ">" | ">=" |
             "<<" | ">>" | ">>>" |
             "+" | "-" | "*" | "/" | "%" |
-            "!" | "^" | "&" | "in" |
-            "instanceof"
+            "!" | "^" | "&" | "instanceof"
   destination: VariableId;
   left: VariableId | Literal;
   right: VariableId | Literal;

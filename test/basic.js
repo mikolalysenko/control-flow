@@ -4,19 +4,24 @@ var tape = require("tape")
 var esprima = require("esprima")
 var controlFlow = require("../cfg")
 var toJS = require("control-flow-to-js")
+var vm = require("vm")
 
-function testModule(t, code) {
+function testCode(t, code, remark) {
   var ast = esprima.parse(code)
   var cfg = controlFlow(ast)
-  var regen = toJS(cfg)
 
-  var referenceProgram = new Function(code)
-  var compiledProgram = new Function(regen)
+  console.log(cfg)
+
+  var regen = toJS(cfg)
+  console.log(regen)
+
+  var reference = vm.runInNewContext(code)
+  var result = vm.runInNewContext(regen)
   
-  t.same(compiledProgram(), referenceProgram())
+  t.same(result, reference, remark)
 }
 
 tape("basic test", function(t) {
-  testModule(t, "return 1")
+  testCode(t, "1")
   t.end()
 })

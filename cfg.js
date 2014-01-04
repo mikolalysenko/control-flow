@@ -5,10 +5,17 @@ module.exports = createControlFlowGraph
 var analyzeClosure = require("./lib/analyzer")
 
 function createControlFlowGraph(root, opts) {
-  opts = opts || {}
+  //Create default environment
+  var env = {
+    global: "window"
+  }
 
-  //Create root environment
-  var env = {}
+  //Set defaults
+  if(opts) {
+    for(var id in opts) {
+      env[id] = opts[id]
+    }
+  }
 
   //Run analysis
   return analyzeClosure(root, env)
