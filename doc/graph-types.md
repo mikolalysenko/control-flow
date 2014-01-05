@@ -341,7 +341,16 @@ interface ReturnTerminator <: Terminator {
 }
 ```
 
+In JavaScript this translates to the following snippet:
+
+```javascript
+// ...
+  return result
+```
+
 ### ThrowTerminator
+
+Throws an exception.  Again, there is only one throw terminator per closure.  The thrown exception is stored in `result`.
 
 ```
 interface ThrowTerminator <: Terminator {
@@ -349,3 +358,14 @@ interface ThrowTerminator <: Terminator {
   exception: VariableId;
 }
 ```
+
+In JavaScript, this translates to the following snippet:
+
+```javascript
+// ...
+  throw exception
+```
+
+# More information
+
+For a more detailed reference of how these data types can be interperterd, take a look at the [control-flow-to-js](https://github.com/mikolalysenko/control-flow-to-js), which acts as a reference implementation of an interperter of this intermediate representation.
