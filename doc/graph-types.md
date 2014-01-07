@@ -107,7 +107,7 @@ A unary JavaScript operator.
 interface UnaryOperator <: Operator {
   type: "UnaryOperator";
   operator: "" | "-" | "+" | "!" | "~" | "typeof";
-  destination: VariableId;
+  result: VariableId;
   argument: VariableId | Literal;
 }
 ```
@@ -115,7 +115,7 @@ interface UnaryOperator <: Operator {
 The interpertation of this in JavaScript would be:
 
 ```javascript
-destination = operator argument;
+result = operator argument;
 ```
 
 For example,
@@ -136,7 +136,7 @@ interface BinaryOperator <: Operator {
             "<<" | ">>" | ">>>" |
             "+" | "-" | "*" | "/" | "%" |
             "!" | "^" | "&" | "instanceof"
-  destination: VariableId;
+  result: VariableId;
   left: VariableId | Literal;
   right: VariableId | Literal;
 }
@@ -145,7 +145,7 @@ interface BinaryOperator <: Operator {
 Example:
 
 ```javascript
-destination = left + right
+result = left + right
 ```
 
 ## Terminator

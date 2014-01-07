@@ -21,6 +21,10 @@ tape("basic test", function(t) {
   testCode(t, "null && 'a'")
   testCode(t, "true ? 'a' : 'b'")
   testCode(t, "0 ? 'a' : 'b'")
-  
+  testCode(t, "'abc'.length")
+  testCode(t, "var a=0; ++a")
+  testCode(t, "var a=0; a++")
+  testCode(t, "var x={a:1}; x")
+
   t.end()
 })
