@@ -13,6 +13,7 @@ tape("objects", function(t) {
   testCode(t, "'a' in {a:1}")
   testCode(t, "'b' in {a:1}")
   testCode(t, "x={a: 1}; delete x.a; x['a']")
+  testCode(t, "[1,2,3,5]")
   
   t.end()
 })
