@@ -12,6 +12,13 @@ tape("loops", function(t) {
   testCode(t, "for(var i=0;;) { if(++i < 10) { break }; i }")
   testCode(t, "for(var i=0;;++i) { if(i < 10) { break }; i }")
   testCode(t, "var i=0; for(;;++i) { if(i < 10) { break }; i }")
+
+  testCode(t, "var i=0; while(1){if(++i < 10) { break } i}")
+  testCode(t, "var i=0; while(++i < 10){ i }")
+
+  testCode(t, "var i=0; do {if(++i < 10) { break } i} while(1)")
+  testCode(t, "var i=0; do { i } while(++i < 10)")
+
   
   t.end()
 })
