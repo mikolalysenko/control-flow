@@ -19,6 +19,8 @@ tape("loops", function(t) {
   testCode(t, "var i=0; do {if(++i < 10) { break } i} while(1)")
   testCode(t, "var i=0; do { i } while(++i < 10)")
 
+  testCode(t, "aaa:  for(var i=0; i<10; ++i) { for(var j=0; j<10; ++j) { if(i+j === 12) break aaa } } i * 10 + j")
+
   
   t.end()
 })
