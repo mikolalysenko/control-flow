@@ -8,12 +8,33 @@ var toJS = require("control-flow-to-js")
 var vm = require("vm")
 var util = require("util")
 
+function stripNodes(cfg) {
+  if(typeof cfg !== "object") {
+    return
+  }
+  if(cfg === null) {
+    return
+  }
+  if(cfg.node) {
+    delete cfg.node
+  }
+  if(cfg.nodes) {
+    delete cfg.nodes
+  }
+  for(var i in cfg) {
+    stripNodes(cfg[i])
+  }
+  return cfg
+}
+
 function testCode(t, code, remark) {
   var ast = esprima.parse(code)
   var cfg = controlFlow(ast)
   var regen = toJS(cfg)
 
-  console.log(util.inspect(cfg, {depth:10}))
+  //TODO: Inspect control flow graph and verify that code is consistent
+
+  console.log(util.inspect(stripNodes(cfg), {depth:10}))
   console.log(regen)
 
   var reference = vm.runInNewContext(code)
