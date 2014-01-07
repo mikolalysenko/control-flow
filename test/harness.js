@@ -34,8 +34,8 @@ function testCode(t, code, remark) {
 
   //TODO: Inspect control flow graph and verify that code is consistent
 
-  //console.log(util.inspect(stripNodes(cfg), {depth:10}))
-  //console.log(regen)
+  console.log(util.inspect(stripNodes(cfg), {depth:10}))
+  console.log(regen)
 
   var reference = vm.runInNewContext(code)
   var result = vm.runInNewContext(regen)
