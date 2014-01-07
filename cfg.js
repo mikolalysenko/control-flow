@@ -6,9 +6,7 @@ var analyzeClosure = require("./lib/analyzer")
 
 function createControlFlowGraph(root, opts) {
   //Create default environment
-  var env = {
-    global: "window"
-  }
+  var env = {}
 
   //Set defaults
   if(opts) {
@@ -16,6 +14,8 @@ function createControlFlowGraph(root, opts) {
       env[id] = opts[id]
     }
   }
+
+  env.temp = { counter: 0 }
 
   //Run analysis
   return analyzeClosure(root, env)
