@@ -20,7 +20,8 @@ tape("loops", function(t) {
   testCode(t, "var i=0; do { i } while(++i < 10)")
 
   testCode(t, "aaa:  for(var i=0; i<10; ++i) { for(var j=0; j<10; ++j) { if(i+j === 12) break aaa } } i * 10 + j")
-
   
+  testCode(t, "var x=[]; for(var y in { a:1, b:2, c:3 }) { x.push(y) }; x.sort(); x")
+
   t.end()
 })
