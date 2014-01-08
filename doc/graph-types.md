@@ -195,7 +195,7 @@ interface CallTerminator <: Terminator {
   result: VariableId;
   next: BlockId;
   exception: VariableId;
-  error: BlockId;
+  catch: BlockId;
 }
 ```
 
@@ -318,7 +318,7 @@ interface NewTerminator <: Terminator {
   result: VariableId;
   next: BlockId;
   exception: VariableId;
-  error: BlockId;
+  catch: BlockId;
 }
 ```
 
