@@ -8,5 +8,6 @@ tape("with", function(t) {
   testCode(t, "var x={a:1}; with(x){a=2}; x")
   testCode(t, "var x={a:1}; with(x){a += 1}; x")
   testCode(t, "var a=1,b=2,x={b:1}; with(x) { a += 3; b += 4 }; [a,b,x]")
+  testCode(t, "var x={a:1},a=2; with(x) { a += 1; delete a; a += 1 } ; a")
   t.end()
 })
