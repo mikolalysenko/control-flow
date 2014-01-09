@@ -27,6 +27,7 @@ tape("basic test", function(t) {
   testCode(t, "var x={a:1}; x")
   testCode(t, "var a=0; { a++ }; a++; {a++ }; ++a")
   testCode(t, "{{{1}}}")
+  testCode(t, "a=0; a+=1; a")
 
   t.end()
 })
