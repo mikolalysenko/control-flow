@@ -37,8 +37,17 @@ function testCode(t, code, remark) {
   //console.log(util.inspect(stripNodes(cfg), {depth:10}))
   //console.log(regen)
 
-  var reference = vm.runInNewContext(code)
-  var result = vm.runInNewContext(regen)
-  
+  var reference, result, exceptReference, exceptResult
+  try {
+    reference = vm.runInNewContext(code)
+  } catch(e) {
+    exceptReference = e
+  }
+  try {
+    result = vm.runInNewContext(regen)
+  } catch(e) {
+    exceptResult = e
+  }
   t.same(result, reference, remark)
+  t.same(exceptResult, exceptReference, remark)
 }
