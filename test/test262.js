@@ -10,7 +10,6 @@ var controlFlow = require("../cfg")
 var strip = require("./harness/strip")
 var toJS = require("control-flow-to-js")
 
-
 function parseDocstring(str) {
   var matchParams = /@(\w*)\s(\S.*)\n/gi
   var matchFlags = /@(\w*)\n/gi
@@ -34,15 +33,19 @@ function runTestCase(filename) {
     }
     var str = data.toString()
     var header = parseDocstring(str)
-    
     tape(filename, function(t) {
       try {
         var ast = esprima(str)
         var cfg = controlFlow(ast)
       } catch(e) {
-        t.ok(header.negative, "parse failure: " + e)
-        t.end()
-        return
+        var x = e.toString()
+        if(x.indexOf("Syntax Error") === 0) {
+          t.ok(true, "parse failure")
+          t.end()
+          return
+        }
+        //Other unspecified error
+        throw e
       }
       
       //Regenerate code
@@ -61,9 +64,11 @@ function runTestCase(filename) {
       try {
         vm.runInContext(regen, context)
       } catch(e) {
-        t.ok(header.negative, "generated exception: " + e)
-        t.end()
-        return
+        if(header.negative) {
+          t.ok(true, "generated exception: " + e)
+          t.end()
+        }
+        throw e
       }
 
       //Check for errors
