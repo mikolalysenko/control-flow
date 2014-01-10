@@ -14,7 +14,8 @@
     "tape": "~2.3.2",
     "tap": "~0.4.6",
     "esprima": "~1.0.4",
-    "control-flow-to-js": "~0.0.0"
+    "control-flow-to-js": "~0.0.0",
+    "glob": "~3.2.8"
   },
   "scripts": {
     "test": "tap test/*.js"
