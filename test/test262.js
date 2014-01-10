@@ -1,7 +1,7 @@
 "use strict"
 
 var glob = require("glob")
-var paths = require("./262.json")
+var paths = require("./262.js")
 var fs = require("fs")
 var tape = require("tape")
 var vm = require("vm")
@@ -36,18 +36,15 @@ function runTestCase(filename) {
     tape(filename, function(t) {
       try {
         var ast = esprima(str)
-        var cfg = controlFlow(ast)
       } catch(e) {
-        var x = e.toString()
-        if(x.indexOf("Syntax Error") === 0) {
-          t.ok(true, "parse failure")
-          t.end()
-          return
-        }
-        //Other unspecified error
-        throw e
+        t.ok(header.negative, "parser error:", e)
+        t.end()
+        return
       }
-      
+
+      //Construct control flow graph
+      var cfg = controlFlow(ast)
+
       //Regenerate code
       var regen = toJS(cfg)
 
@@ -56,6 +53,9 @@ function runTestCase(filename) {
       var environment = {
         $ERROR: function(err) {
           errorList.push(err)
+        },
+        $PRINT: function() {
+          return console.log.apply(console, Array.prototype.slice.call(arguments))
         }
       }
       var context = vm.createContext(environment)
@@ -67,6 +67,7 @@ function runTestCase(filename) {
         if(header.negative) {
           t.ok(true, "generated exception: " + e)
           t.end()
+          return
         }
         throw e
       }
