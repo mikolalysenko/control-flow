@@ -7,25 +7,7 @@ var controlFlow = require("../../cfg")
 var toJS = require("control-flow-to-js")
 var vm = require("vm")
 var util = require("util")
-
-function stripNodes(cfg) {
-  if(typeof cfg !== "object") {
-    return
-  }
-  if(cfg === null) {
-    return
-  }
-  if(cfg.node) {
-    delete cfg.node
-  }
-  if(cfg.nodes) {
-    delete cfg.nodes
-  }
-  for(var i in cfg) {
-    stripNodes(cfg[i])
-  }
-  return cfg
-}
+var stripNodes = require("./strip")
 
 function testCode(t, code, remark) {
   var ast = esprima.parse(code)

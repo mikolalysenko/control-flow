@@ -7,6 +7,7 @@ var tape = require("tape")
 var vm = require("vm")
 var esprima = require("esprima").parse
 var controlFlow = require("../cfg")
+var strip = require("./harness/strip")
 var toJS = require("control-flow-to-js")
 
 
