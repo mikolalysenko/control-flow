@@ -76,6 +76,8 @@ interface Block {
   type: "Block";
   id: BlockId;
   body: [ Operator ];
+  exception: VariableId;
+  catch: BlockId;
   terminator: Terminator;
 }
 ```
@@ -85,6 +87,8 @@ More specifically each of these properties has the following interpretation:
 * `type` is always a string set to `"Block"`
 * `id` is an index into the containing closure's array of blocks
 * `body` is an array of Operators that represent the semantic behavior of the block
+* `exception` is a VariableId which gets the result of any exceptions
+* `catch` is the BlockId of the exception handler for this block
 * `terminator` is a Terminator node that is executed after `body`
 
 ## Operator
@@ -135,7 +139,7 @@ interface BinaryOperator <: Operator {
             "<" | "<=" | ">" | ">=" |
             "<<" | ">>" | ">>>" |
             "+" | "-" | "*" | "/" | "%" |
-            "!" | "^" | "&" | "instanceof"
+            "!" | "^" | "&" | "in" | instanceof"
   result: VariableId;
   left: VariableId | Literal;
   right: VariableId | Literal;
@@ -146,6 +150,109 @@ Example:
 
 ```javascript
 result = left + right
+```
+
+### CallOperator
+
+Calls a function or subroutine
+
+```
+interface CallOperator <: Operator {
+  type: "CallOperator";
+  callee: VariableId;
+  object: VariableId | Literal;
+  arguments: [ VariableId | Literal ];
+  result: VariableId;
+}
+```
+
+A CallOperator translates into the following JavaScript
+
+```javascript
+result = callee.apply(object, arguments)
+```
+
+If the function completes normally, then execution continues from the `next` block.  Otherwise, if an exception is generated the exception is stored in `exception` and code jumps to the `error` block.
+
+In addition to normal function calls, object construction and property access is managed using the CallTerminator block.  The following psuedofunctions are defined:
+
+### GetOperator
+
+Access an object property
+
+```
+interface GetOperator <: Operator {
+  type: "GetOperator";
+  object: VariableId;
+  property: VariableId | Literal;
+  result: VariableId;
+}
+```
+
+In JavaScript, this function can be translated as follows:
+
+```javascript
+result = object[property]
+```
+
+### SetOperator
+
+Updates a property in an object
+
+```
+interface SetOperator <: Operator {
+  type: "SetOperator";
+  object: VariableId;
+  property: VariableId | Literal;
+  value: VariableId | Literal;
+  result: VariableId;
+}
+```
+
+This can be interpreterd as follows,
+
+```javascript
+result = object[property] = value
+```
+
+### DeleteOperator
+
+Deletes a property of an object.
+
+```
+interface DeleteOperator <: Operator {
+  type: "DeleteOperator";
+  object: VariableId;
+  property: VariableId | Literal;
+  result: VariableId;
+}
+```
+
+This translates to the following JavaScript
+
+```javascript
+function delete(object, property) {
+  return delete object[property]
+}
+```
+
+### NewOperator
+
+Creates a new object.  The constructor for the object is stored in the `object` property.
+
+```
+interface NewOperator <: Operator {
+  type: "NewOperator";
+  constructor: VariableId;
+  arguments: [ VariableId | Literal ];
+  result: VariableId;
+}
+```
+
+This translates to the following JavaScript
+
+```javascript
+result = new constrctor(arguments[0], arguments[1], ...)
 ```
 
 ## Terminator
@@ -179,154 +286,6 @@ interface IfTerminator <: Terminator {
   predicate: VariableId;
   consequent: BlockId;
   alternate: BlockId;
-}
-```
-
-### CallTerminator
-
-Calls a function or subroutine
-
-```
-interface CallTerminator <: Terminator {
-  type: "CallTerminator";
-  callee: VariableId;
-  object: VariableId | Literal;
-  arguments: [ VariableId | Literal ];
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-A CallTerminator translates into the following JavaScript
-
-```javascript
-result = callee.call(object, arguments[0], arguments[1], ...)
-```
-
-If the function completes normally, then execution continues from the `next` block.  Otherwise, if an exception is generated the exception is stored in `exception` and code jumps to the `error` block.
-
-In addition to normal function calls, object construction and property access is managed using the CallTerminator block.  The following psuedofunctions are defined:
-
-### GetTerminator
-
-Access a property of `object`
-
-```
-interface GetTerminator <: Terminator {
-  type: "GetTerminator";
-  object: VariableId;
-  property: VariableId | Literal;
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-In JavaScript, this function can be translated as follows:
-
-```javascript
-function get(object, property) {
-  return object[property]
-}
-```
-
-### SetTerminator
-
-Updates a property in an object
-
-```
-interface SetTerminator <: Terminator {
-  type: "SetTerminator";
-  object: VariableId;
-  property: VariableId | Literal;
-  value: VariableId | Literal;
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-This can be interpreterd as follows,
-
-```javascript
-function set(object, property, value) {
-  return object[property] = value
-}
-```
-
-### DeleteTerminator
-
-Deletes a property of an object.
-
-```
-interface DeleteTerminator <: Terminator {
-  type: "DeleteTerminator";
-  object: VariableId;
-  property: VariableId | Literal;
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-This translates to the following JavaScript
-
-```javascript
-function delete(object, property) {
-  return delete object[property]
-}
-```
-
-### HasTerminator
-
-Checks if a property is contained in an object
-
-```
-interface HasTerminator <: Terminator {
-  type: "HasTerminator";
-  object: VariableId;
-  property: VariableId | Literal;
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-This translates to the following psuedo-JavaScript
-
-```javascript
-function has(object, property) {
-  return property in object
-}
-```
-
-### NewTerminator
-
-Creates a new object.  The constructor for the object is stored in the `object` property.
-
-```
-interface NewTerminator <: Terminator {
-  type: "NewTerminator";
-  constructor: VariableId;
-  arguments: [ VariableId | Literal ];
-  result: VariableId;
-  next: BlockId;
-  exception: VariableId;
-  catch: BlockId;
-}
-```
-
-This translates to the following JavaScript
-
-```javascript
-function new(args...) {
-  return new object(args...)
 }
 ```
 
