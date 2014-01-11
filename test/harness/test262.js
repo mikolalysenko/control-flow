@@ -1,13 +1,15 @@
 "use strict"
 
+module.exports = runTest262
+
 var glob = require("glob")
-var paths = require("./harness/262.js")
+var paths = require("./262.js")
 var fs = require("fs")
 var tape = require("tape")
 var vm = require("vm")
 var esprima = require("esprima").parse
-var controlFlow = require("../cfg")
-var strip = require("./harness/strip")
+var controlFlow = require("../../cfg")
+var strip = require("./strip")
 var toJS = require("control-flow-to-js")
 
 function parseDocstring(str) {
@@ -85,8 +87,8 @@ function runTestCase(filename) {
   })
 }
 
-for(var i=0; i<paths.length; ++i) {
-  glob(paths[i], {}, function(err, files) {
+function runTest262(path) {
+  glob(path, {}, function(err, files) {
     if(err) {
       console.error("Error globbing test case files", err)
       return
