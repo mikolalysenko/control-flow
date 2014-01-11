@@ -183,7 +183,7 @@ Access an object property
 ```
 interface GetOperator <: Operator {
   type: "GetOperator";
-  object: VariableId;
+  object: VariableId | Literal;
   property: VariableId | Literal;
   result: VariableId;
 }
@@ -202,7 +202,7 @@ Updates a property in an object
 ```
 interface SetOperator <: Operator {
   type: "SetOperator";
-  object: VariableId;
+  object: VariableId | Literal;
   property: VariableId | Literal;
   value: VariableId | Literal;
   result: VariableId;
@@ -222,7 +222,7 @@ Deletes a property of an object.
 ```
 interface DeleteOperator <: Operator {
   type: "DeleteOperator";
-  object: VariableId;
+  object: VariableId | Literal;
   property: VariableId | Literal;
   result: VariableId;
 }
@@ -231,9 +231,7 @@ interface DeleteOperator <: Operator {
 This translates to the following JavaScript
 
 ```javascript
-function delete(object, property) {
-  return delete object[property]
-}
+result = delete object[property]
 ```
 
 ### NewOperator
