@@ -1,0 +1,1 @@
+require("./harness/test262.js")("test262/test/suite/ch06/*.js")

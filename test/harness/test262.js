@@ -50,7 +50,7 @@ function runTestCase(filename) {
       //Regenerate code
       var regen = toJS(cfg)
 
-      console.log(regen)
+      //console.log(regen)
 
       //Build environment
       var errorList = []
