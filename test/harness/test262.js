@@ -3,7 +3,6 @@
 module.exports = runTest262
 
 var glob = require("glob")
-var paths = require("./262.js")
 var fs = require("fs")
 var tape = require("tape")
 var vm = require("vm")
